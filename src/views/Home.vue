@@ -32,7 +32,7 @@
                   :key="it.id"
                   @click="breadmenu(item.authName,it.authName)"
                 >
-                  <i class="el-icon-s-order"></i>
+                  <i class="el-icon-menu"></i>
                   <span>{{it.authName}}</span>
                 </el-menu-item>
               </el-menu-item-group>
@@ -55,10 +55,10 @@ export default {
       menulist: [],
       iconlist: {
         "125": "el-icon-user-solid",
-        "103": "el-icon-goods",
-        "101": "el-icon-picture",
-        "102": "el-icon-video-camera-solid",
-        "145": "el-icon-message-solid"
+        "103": "el-icon-s-shop",
+        "101": "el-icon-s-goods",
+        "102": "el-icon-s-order",
+        "145": "el-icon-data-line"
       },
       flag: false
     };
@@ -74,7 +74,7 @@ export default {
     },
     async getMenuList() {
       const res = await this.$axios.get("/menus");
-      console.log(res);
+      // console.log(res);
       this.menulist = res.data.data;
     },
     //面包屑
@@ -112,7 +112,7 @@ export default {
 .el-aside {
   background-color: #4d5864;
   color: #333;
-  min-height: 400px;
+  min-height: 450px;
   #left_top {
     line-height: 30px;
     color: #fff;

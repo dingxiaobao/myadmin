@@ -22,7 +22,7 @@ import 'element-ui/lib/theme-chalk/index.css'
 Vue.use(ElementUI)
 
 import echarts from "echarts"
-Vue.prototype.$echart = echarts
+Vue.prototype.$echarts = echarts
 
 // 将token设置在请求头上
 axios.interceptors.request.use(
