@@ -1,22 +1,185 @@
 <template>
   <div>
-    <BradMenu />
+    <Breadmenu />
+    <el-card>
+      <!-- 表单区域 -->
+      <el-row :gutter="10">
+        <el-col :span="8">
+          <el-input
+            placeholder="请输入内容"
+            class="input-with-select"
+            v-model="obj.query"
+            clearable
+            @clear="goodslist"
+          >
+            <el-button slot="append" icon="el-icon-search" @click="goodslist"></el-button>
+          </el-input>
+        </el-col>
+        <el-col :span="4">
+          <el-button type="primary" style="margin-left:20px" @click="add">添加用户</el-button>
+        </el-col>
+      </el-row>
+
+      <!-- 表格 -->
+      <el-table :data="goodsList.goods">
+        <el-table-column label="#" prop="goods_id" />
+        <el-table-column label="商品名称" prop="goods_name" />
+        <el-table-column label="商品价格(元)" prop="goods_number" />
+        <el-table-column label="商品重量" prop="goods_weight" />
+        <el-table-column label="创建时间" prop="add_time" />
+        <el-table-column label="操作">
+          <template v-slot="scope">
+            <el-button type="primary" icon="el-icon-edit" size="mini" @click="editUser(scope.row)"></el-button>
+            <el-button
+              type="danger"
+              icon="el-icon-delete"
+              size="mini"
+              @click="del(scope.row.goods_id)"
+            ></el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!-- 分页 -->
+      <el-pagination
+        @size-change="getSize"
+        @current-change="getPage"
+        :current-page="obj.pagenum"
+        :page-sizes="[2, 5, 15, 20]"
+        :page-size="obj.pagesize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="goodsList.total"
+      ></el-pagination>
+    </el-card>
+    <!-- 编辑 -->
+    <el-dialog title="编辑用户名" :visible.sync="editFlag">
+      <el-form :model="editform" ref="editName">
+        <el-form-item label="商品名称" :label-width="'80px'">
+          <el-input v-model="editform.goods_name" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="商品价格" :label-width="'80px'">
+          <el-input v-model="editform.goods_price" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="商品重量" :label-width="'80px'">
+          <el-input v-model="editform.goods_weight" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="editFlag = false">取 消</el-button>
+        <el-button type="primary" @click="editFlag = false">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
-
 <script>
-import BradMenu from "../BeadMenu";
+import Breadmenu from "../BeadMenu";
+import qs from "qs";
 export default {
-  components: { BradMenu },
+  components: { Breadmenu },
   data() {
-    return {};
+    return {
+      //分页
+      obj: {
+        query: "",
+        pagenum: 1,
+        pagesize: 2
+      },
+      //列表对象
+      goodsList: {},
+      //编辑
+      editFlag: false,
+      editform: {
+        id: 1,
+        goods_name: "",
+        goods_price: "",
+        goods_weight: ""
+      }
+    };
   },
-  created() {},
-  mounted() {},
-  methods: {},
-  computed: {}
+  mounted() {
+    this.goodslist();
+  },
+  methods: {
+    add() {
+      var obj = { one: "商品管理", two: "添加商品" };
+      sessionStorage.setItem("path", JSON.stringify(obj));
+      this.$router.push("/goodslist");
+    },
+    //获取列表
+    async goodslist() {
+      var str = qs.stringify(this.obj);
+      var { data: res } = await this.$axios.get("/goods?" + str);
+      // console.log(res);
+      this.goodsList = res.data;
+    },
+    //页码
+    getPage(nowpage) {
+      this.obj.pagenum = nowpage;
+      this.goodslist();
+    },
+    //条数
+    getSize(nowsize) {
+      this.obj.pagesize = nowsize;
+      this.goodslist();
+    },
+    //删除
+    del(id) {
+      this.$confirm("亲，你确定要删除吗？删除就不能恢复了", "删除用户", {
+        confirmButtonText: "确定删除",
+        cancelButtonText: "再想想",
+        type: "warning"
+      })
+        .then(() => {
+          this.$axios.delete(`goods/${id}`).then(res => {
+            console.log(res.data);
+            if (res.data.meta.status !== 200) {
+              this.$message.error("删除失败");
+              return;
+            }
+            this.$message.success("删除成功");
+            this.goodslist();
+          });
+        })
+        .catch(() => {
+          this.$message("你已取消删除");
+        });
+    },
+    //编辑
+    editUser(row) {
+      this.editform = {
+        id: row.id,
+        goods_name: row.goods_name,
+        goods_price: row.goods_price,
+        goods_weight: row.goods_weight
+      };
+      this.editFlag = true;
+    },
+    editget(editName) {
+      // this.editFlag = true;
+      this.$refs.editName.validate(async rules => {
+        if (rules) {
+          var obj = {
+            goods_name: this.editform.goods_name,
+            goods_price: this.editform.goods_price,
+            goods_weight: this.editform.goods_weight
+          };
+          var { data: res } = await this.$axios.put(
+            `goods/${this.editform.id}`,
+            obj
+          );
+          console.log(res);
+          if (res.meta.status == 200) {
+            this.editFlag = false;
+            this.goodslist();
+            this.$message.success("修改成功");
+          }
+        }
+      });
+    }
+  }
 };
 </script>
-
-<style scoped>
+<style lang="scss" scope>
+.el-card {
+  margin-top: 10px;
+}
 </style>

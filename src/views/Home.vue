@@ -80,6 +80,8 @@ export default {
     //面包屑
     breadmenu(name1,name2){
       var obj={'one':name1,'two':name2}
+      console.log(obj);
+      
       sessionStorage.setItem('path',JSON.stringify(obj))
     }
   }

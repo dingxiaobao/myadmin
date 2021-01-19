@@ -20,10 +20,17 @@ axios.defaults.baseURL = "https://www.liulongbin.top:8888/api/private/v1/"
 import ElementUI from "element-ui"
 import 'element-ui/lib/theme-chalk/index.css'
 Vue.use(ElementUI)
-
+//echarts
 import echarts from "echarts"
 Vue.prototype.$echarts = echarts
 
+//在线编辑器
+// import VueQuillEditor from 'vue-quill-editor'
+// // require styles
+// import 'quill/dist/quill.core.css'
+// import 'quill/dist/quill.snow.css'
+// import 'quill/dist/quill.bubble.css'
+// Vue.use(VueQuillEditor)
 // 将token设置在请求头上
 axios.interceptors.request.use(
   config => {

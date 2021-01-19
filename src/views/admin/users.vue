@@ -40,7 +40,14 @@
           <template v-slot="scope">
             <el-button type="primary" icon="el-icon-edit" size="mini" @click="editUser(scope.row)"></el-button>
             <el-button type="danger" icon="el-icon-delete" size="mini" @click="del(scope.row.id)"></el-button>
-            <el-button type="warning" icon="el-icon-setting" size="mini" @click="getAllroles(scope.row)"></el-button>
+            <el-tooltip effect="dark" content="分配角色" placement="top" :enterable="false">
+              <el-button
+                type="warning"
+                icon="el-icon-setting"
+                size="mini"
+                @click="RolesSet(scope.row)"
+              ></el-button>
+            </el-tooltip>
           </template>
         </el-table-column>
       </el-table>
@@ -95,20 +102,25 @@
       </div>
     </el-dialog>
     <!-- 分配权限 -->
-    <el-dialog title="分配权限" :visible.sync="Rolesflag">
-      <el-form>
-        <el-form-item label="当前的用户"></el-form-item>
-        <el-form-item label="当前的角色"></el-form-item>
-        <el-form-item label="分配新角色">
-          <el-select placeholder="请选择">
-            <el-option label="区域一"></el-option>
-            <el-option label="区域二"></el-option>
+    <el-dialog title="分配权限" :visible.sync="Rolesflag" @close="Allroles">
+      <el-form :model="userInfo" class="form">
+        <p>当前的用户：{{userInfo.username}}</p>
+        <p>当前的角色：{{userInfo.role_name}}</p>
+        <P>
+          分配新角色：
+          <el-select v-model="setRoleId" placeholder="请选择新角色">
+            <el-option
+              v-for="item in roleslist"
+              :key="item.id"
+              :label="item.roleName"
+              :value="item.id"
+            ></el-option>
           </el-select>
-        </el-form-item>
+        </P>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="Rolesflag = false">取 消</el-button>
-        <el-button type="primary" @click="Rolesflag = false">确 定</el-button>
+        <el-button type="primary" @click="getAllroles">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -160,7 +172,9 @@ export default {
       },
       //分配权限
       Rolesflag: false,
-
+      userInfo: {},
+      roleslist: [],
+      setRoleId: "",
       // 正则
       rules: {
         username: [
@@ -224,24 +238,26 @@ export default {
     },
     //删除
     del(id) {
-      // this.$confirm("亲，你确定要删除吗？删除就不能恢复了", "删除用户", {
-      //   confirmButtonText: "确定删除",
-      //   cancelButtonText: "再想想",
-      //   type: "warning"
-      // }).then(()=>{
-      this.$axios.delete(`users/${id}`).then(res => {
-        console.log(res);
-        if (res.data.meta.status !== 200) {
-          this.$message.error("删除失败");
-          return;
-        } else {
-          this.$message.success("删除成功");
-          this.getUser();
-        }
-      });
-      // }).catch(()=>{
-      //   this.$message('你已取消删除')
-      // })
+      this.$confirm("亲，你确定要删除吗？删除就不能恢复了", "删除用户", {
+        confirmButtonText: "确定删除",
+        cancelButtonText: "再想想",
+        type: "warning"
+      })
+        .then(() => {
+          this.$axios.delete(`users/${id}`).then(res => {
+            console.log(res);
+            if (res.data.meta.status !== 200) {
+              this.$message.error("删除失败");
+              return;
+            } else {
+              this.$message.success("删除成功");
+              this.getUser();
+            }
+          });
+        })
+        .catch(() => {
+          this.$message("你已取消删除");
+        });
     },
     //编辑
     editUser(row) {
@@ -273,8 +289,33 @@ export default {
       });
     },
     // 获取所有角色
-    getAllroles() {
-      this.Rolesflag=true
+    async RolesSet(info) {
+      this.userInfo = info;
+      //在展示对话框之前，获取所有角色的列表
+      var { data: res } = await this.$axios.get("roles");
+      // console.log(res);
+      this.roleslist = res.data;
+      this.Rolesflag = true;
+    },
+    async getAllroles() {
+      if (!this.setRoleId) {
+        return this.$message.error("请选择要分配的角色");
+      }
+      var { data: res } = await this.$axios.put(
+        
+        `users/${this.userInfo.id}/role`,
+        {
+          rid: this.setRoleId
+        }
+      );
+      // debugger
+      this.getUser();
+      this.$message.success("更新成功");
+      this.Rolesflag = false;
+    },
+    Allroles() {
+      this.setRoleId = "";
+      this.userInfo = {};
     }
   },
   computed: {}
@@ -289,5 +330,8 @@ export default {
   width: 100%;
   margin: 15px 0 15px 0;
   border-radius: 3px;
+}
+.form p {
+  margin: 10px;
 }
 </style>
