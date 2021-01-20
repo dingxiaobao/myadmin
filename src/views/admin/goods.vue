@@ -21,15 +21,15 @@
       </el-row>
 
       <!-- 表格 -->
-      <el-table :data="goodsList.goods">
-        <el-table-column label="#" prop="goods_id" />
-        <el-table-column label="商品名称" prop="goods_name" />
+      <el-table :data="goodsList.goods" border style="margin-top:20px;">
+        <el-table-column label="#" type="index" />
+        <el-table-column label="商品名称" prop="goods_name" width="500px" />
         <el-table-column label="商品价格(元)" prop="goods_number" />
         <el-table-column label="商品重量" prop="goods_weight" />
         <el-table-column label="创建时间" prop="add_time" />
         <el-table-column label="操作">
           <template v-slot="scope">
-            <el-button type="primary" icon="el-icon-edit" size="mini" @click="editUser(scope.row)"></el-button>
+            <el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
             <el-button
               type="danger"
               icon="el-icon-delete"
@@ -50,24 +50,6 @@
         :total="goodsList.total"
       ></el-pagination>
     </el-card>
-    <!-- 编辑 -->
-    <el-dialog title="编辑用户名" :visible.sync="editFlag">
-      <el-form :model="editform" ref="editName">
-        <el-form-item label="商品名称" :label-width="'80px'">
-          <el-input v-model="editform.goods_name" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="商品价格" :label-width="'80px'">
-          <el-input v-model="editform.goods_price" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="商品重量" :label-width="'80px'">
-          <el-input v-model="editform.goods_weight" autocomplete="off"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="editFlag = false">取 消</el-button>
-        <el-button type="primary" @click="editFlag = false">确 定</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 <script>
@@ -84,15 +66,7 @@ export default {
         pagesize: 2
       },
       //列表对象
-      goodsList: {},
-      //编辑
-      editFlag: false,
-      editform: {
-        id: 1,
-        goods_name: "",
-        goods_price: "",
-        goods_weight: ""
-      }
+      goodsList: {}
     };
   },
   mounted() {
@@ -142,38 +116,6 @@ export default {
         .catch(() => {
           this.$message("你已取消删除");
         });
-    },
-    //编辑
-    editUser(row) {
-      this.editform = {
-        id: row.id,
-        goods_name: row.goods_name,
-        goods_price: row.goods_price,
-        goods_weight: row.goods_weight
-      };
-      this.editFlag = true;
-    },
-    editget(editName) {
-      // this.editFlag = true;
-      this.$refs.editName.validate(async rules => {
-        if (rules) {
-          var obj = {
-            goods_name: this.editform.goods_name,
-            goods_price: this.editform.goods_price,
-            goods_weight: this.editform.goods_weight
-          };
-          var { data: res } = await this.$axios.put(
-            `goods/${this.editform.id}`,
-            obj
-          );
-          console.log(res);
-          if (res.meta.status == 200) {
-            this.editFlag = false;
-            this.goodslist();
-            this.$message.success("修改成功");
-          }
-        }
-      });
     }
   }
 };

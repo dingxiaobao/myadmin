@@ -1,6 +1,6 @@
 <template>
   <div>
-    <BeadMenu />
+    <Breadmenu />
     <el-card>
       <div class="box">
         <i class="el-alert__icon el-icon-info"></i>
@@ -16,22 +16,22 @@
         <el-step title="完成"></el-step>
       </el-steps>
       <!-- 标签页 -->
-      <el-form :model="goodsobj" label-width="80px">
+      <el-form :model="goodsobj" label-width="80px" :rules="rules" label-position="top">
         <el-tabs tab-position="left" style="height:300px" @tab-click="changeTab" v-model="nowTab">
           <el-tab-pane label="基本信息" name="1">
-            <el-form-item label="商品名称">
+            <el-form-item label="商品名称" prop="goods_name">
               <el-input v-model="goodsobj.goods_name"></el-input>
             </el-form-item>
-            <el-form-item label="商品价格">
+            <el-form-item label="商品价格" prop="goods_price">
               <el-input v-model="goodsobj.goods_price"></el-input>
             </el-form-item>
-            <el-form-item label="商品数量">
+            <el-form-item label="商品数量" prop="goods_number">
               <el-input v-model="goodsobj.goods_number"></el-input>
             </el-form-item>
-            <el-form-item label="商品重量">
+            <el-form-item label="商品重量" prop="goods_weight">
               <el-input v-model="goodsobj.goods_weight"></el-input>
             </el-form-item>
-            <el-form-item label="商品分类">
+            <el-form-item label="商品分类" prop="goods_cat">
               <el-cascader
                 v-model="goodsobj.goods_cat"
                 :options="catelist"
@@ -55,7 +55,7 @@
             </el-upload>
           </el-tab-pane>
           <el-tab-pane label="商品内容" name="5">
-            <quill-editor v-model="goodsobj.goods_introduce" style="min-height:300px"></quill-editor>
+            <quill-editor v-model="goodsobj.goods_introduce" style="min-height:200px"></quill-editor>
             <el-button type="primary" @click="addData()">添加用户</el-button>
           </el-tab-pane>
         </el-tabs>
@@ -64,10 +64,34 @@
   </div>
 </template>
 <script>
-import BeadMenu from "../BeadMenu";
+import Breadmenu from "../BeadMenu";
 export default {
-  components: { BeadMenu },
+  components: { Breadmenu },
   data() {
+    var checkJG = (rules, val, cb) => {
+      var reg = /^(\d|[1-9]\d+)(\.\d+)?$/;
+      if (!reg.test(val)) {
+        cb(new Error("商品价格必须是大于0的整数或小数"));
+      } else {
+        cb();
+      }
+    };
+    var checkZS = (rules, val, cb) => {
+      var reg = /^(\d|[1-9]\d+)(\.\d+)?$/;
+      if (!reg.test(val)) {
+        cb(new Error("商品重量必须是大于0的整数或小数"));
+      } else {
+        cb();
+      }
+    };
+    var checkSL = (rules, val, cb) => {
+      var reg = /^(\d|[1-9]\d+)(\.\d+)?$/;
+      if (!reg.test(val)) {
+        cb(new Error("商品数量必须是大于0的整数或小数"));
+      } else {
+        cb();
+      }
+    };
     return {
       nowTab: 0,
       //商品对象
@@ -79,6 +103,27 @@ export default {
         goods_cat: "",
         pics: [],
         goods_introduce: ""
+      },
+      //校验
+      rules: {
+        goods_name: [
+          { required: true, message: "请输入商品名称", trigger: "blur" }
+        ],
+        goods_price: [
+          { required: true, message: "请输入商品价格", trigger: "blur" },
+          { validator: checkJG, trigger: "blur" }
+        ],
+        goods_weight: [
+          { required: true, message: "请输入商品重量", trigger: "blur" },
+          { validator: checkZS, trigger: "blur" }
+        ],
+        goods_number: [
+          { required: true, message: "请输入商品数量", trigger: "blur" },
+          { validator: checkSL, trigger: "blur" }
+        ],
+        goods_cat: [
+          { required: true, message: "请选择商品分类", trigger: "blur" }
+        ]
       },
       //分类数据
       catelist: [],
@@ -110,28 +155,27 @@ export default {
     },
     //添加用户
     async addData() {
-    //   this.goodsobj.goods_cat = this.goodsobj.goods_cat.join(",");
-    //   console.log(this.goodsobj);
+      this.goodsobj.goods_cat = this.goodsobj.goods_cat.join(",");
+      //   console.log(this.goodsobj)
       var { data: res } = await this.$axios.post("goods", this.goodsobj);
       console.log(res);
-    },
-    async goodsUser() {
-      var { data: res } = await this.$axios.get("categories");
-      this.catelist = res.data;
     }
   },
   mounted() {
     var loginmsg = JSON.parse(sessionStorage.getItem("04A_token"));
     this.fileobj.Authorization = loginmsg.token;
     console.log(loginmsg);
-    this.goodsUser();
+    this.$axios.get("categories").then(res => {
+      console.log(res);
+      this.catelist = res.data.data;
+    });
   }
 };
 </script>
-<style lang="scss" scope>
+<style lang="scss" scoped>
 .el-card {
   margin-top: 10px;
-  height: 600px;
+  height: 700px;
 }
 .el-button {
   margin-top: 10px;

@@ -25,12 +25,15 @@ import echarts from "echarts"
 Vue.prototype.$echarts = echarts
 
 //在线编辑器
-// import VueQuillEditor from 'vue-quill-editor'
-// // require styles
-// import 'quill/dist/quill.core.css'
-// import 'quill/dist/quill.snow.css'
-// import 'quill/dist/quill.bubble.css'
-// Vue.use(VueQuillEditor)
+import VueQuillEditor from 'vue-quill-editor'
+// require styles
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
+Vue.use(VueQuillEditor)
+
+import TreeTable from 'vue-table-with-tree-grid'
+Vue.component('tree-table', TreeTable)
 // 将token设置在请求头上
 axios.interceptors.request.use(
   config => {
