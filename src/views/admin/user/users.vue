@@ -127,7 +127,7 @@
 </template>
 
 <script>
-import BradMenu from "../BeadMenu";
+import BradMenu from "../../BeadMenu";
 import qs from "qs";
 export default {
   components: { BradMenu },

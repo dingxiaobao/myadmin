@@ -64,7 +64,7 @@
   </div>
 </template>
 <script>
-import Breadmenu from "../BeadMenu";
+import Breadmenu from "../../BeadMenu";
 export default {
   components: { Breadmenu },
   data() {

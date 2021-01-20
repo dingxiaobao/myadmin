@@ -1,11 +1,7 @@
 <template>
   <div>
     <!-- 面包屑导航区域 -->
-    <el-breadcrumb separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>用户管理</el-breadcrumb-item>
-      <el-breadcrumb-item>用户列表</el-breadcrumb-item>
-    </el-breadcrumb>
+    <Breadmenu/>
     <!-- 卡片试图区域 -->
     <el-card>
       <el-row>
@@ -120,11 +116,9 @@
 </template>
 
 <script>
+import Breadmenu from "../../BeadMenu";
 export default {
-  // 组件参数 接收来自父组件的数据
-  props: [],
-  // 局部注册的组件
-  components: {},
+  components: { Breadmenu },
   // 组件状态值
   data() {
     return {

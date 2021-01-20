@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import BradMenu from "../BeadMenu";
+import BradMenu from "../../BeadMenu";
 export default {
   components: { BradMenu },
   data() {

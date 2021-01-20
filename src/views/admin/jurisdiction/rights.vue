@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import BradMenu from "../BeadMenu";
+import BradMenu from "../../BeadMenu";
 import { log } from "util";
 export default {
   components: { BradMenu },

@@ -141,7 +141,7 @@
   </div>
 </template>
 <script>
-import Breadmenu from "../BeadMenu";
+import Breadmenu from "../../BeadMenu";
 import { log } from "util";
 export default {
   components: { Breadmenu },

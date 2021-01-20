@@ -21,52 +21,52 @@ const routes = [{
       {
       path: '/index',
       name: 'index',
-      component: () => import('../views/admin/index')
+      component: () => import('../views/admin/user/index')
       },
       {
         path: '/users',
         name: 'users',
-        component: () => import('../views/admin/users')
+        component: () => import('../views/admin/user/users')
       },
       {
         path: '/roles',
         name: 'roles',
-        component: () => import('../views/admin/roles')
+        component: () => import('../views/admin/jurisdiction/roles')
       },
       {
         path: '/rights',
         name: 'rights',
-        component: () => import('../views/admin/rights')
+        component: () => import('../views/admin/jurisdiction/rights')
       },
       {
         path: '/goods',
         name: 'goods',
-        component: () => import('../views/admin/goods'),
+        component: () => import('../views/admin/good/goods'),
       },
       {
         path: '/goodslist',
         name: 'goodslist',
-        component: () => import('../views/admin/goodslist')
+        component: () => import('../views/admin/good/goodslist')
       },
       {
         path: '/categories',
         name: 'categories',
-        component: () => import('../views/admin/categories')
+        component: () => import('../views/admin/good/categories')
       },
       {
         path: '/params',
         name: 'params',
-        component: () => import('../views/admin/params')
+        component: () => import('../views/admin/good/params')
       },
       {
         path: '/orders',
         name: 'orders',
-        component: () => import('../views/admin/orders')
+        component: () => import('../views/admin/order/orders')
       },
       {
         path: '/reports',
         name: 'reports',
-        component: () => import('../views/admin/reports')
+        component: () => import('../views/admin/chart/reports')
       }
     ]
   }
